@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f4c81">
+  <meta name="theme-color" content="#123b5d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="住宅予算診断">
   <title>住宅購入予算診断｜その家、買って大丈夫？</title>
-  <meta name="description" content="家を買った後も暮らしを守れる住宅購入予算を簡易診断するWebアプリです。">
+  <meta name="description" content="借りられる額ではなく、購入後の暮らしを守れる住宅購入予算を簡易診断するWebアプリです。">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
@@ -27,79 +27,78 @@
       <div class="hero-badge">群馬県で家を買う方へ</div>
       <h1>その家、<br>買って大丈夫？</h1>
       <p>「借りられる金額」ではなく、<strong>購入後の暮らしを守れる予算</strong>を簡易診断します。</p>
-      <div class="trust">約2〜3分・端末内計算・入力内容は保存しません</div>
+      <div class="trust">約3〜4分・端末内計算・入力内容は保存しません</div>
     </section>
 
     <nav class="quick-menu">
-      <button class="menu-card active" data-target="diagnosis">
-        <span class="menu-icon">🏠</span>
-        <span>住宅予算診断</span>
-      </button>
-      <button class="menu-card" data-target="about">
-        <span class="menu-icon">✓</span>
-        <span>診断について</span>
-      </button>
-      <button class="menu-card" data-target="consult">
-        <span class="menu-icon">💬</span>
-        <span>FPに相談</span>
-      </button>
+      <button class="menu-card active" data-target="diagnosis"><span class="menu-icon">🏠</span><span>住宅予算診断</span></button>
+      <button class="menu-card" data-target="about"><span class="menu-icon">✓</span><span>診断について</span></button>
+      <button class="menu-card" data-target="consult"><span class="menu-icon">💬</span><span>FPに相談</span></button>
     </nav>
 
     <section id="diagnosis" class="screen">
       <section class="card">
-        <div class="section-title">
-          <span class="step">1</span>
-          <h2>ご家庭の状況</h2>
-        </div>
-
+        <div class="section-title"><span class="step">1</span><h2>ご家庭の状況</h2></div>
         <div class="form-grid">
-          <div class="field"><label for="age">本人年齢 <span>歳</span></label><input id="age" type="number" min="18" max="79" inputmode="numeric" value="40"></div>
-          <div class="field"><label for="income">世帯年収 <span>万円</span></label><input id="income" type="number" min="1" inputmode="numeric" value="600"></div>
-          <div class="field"><label for="takehome">手取り月収 <span>万円</span></label><input id="takehome" type="number" min="1" step="0.1" inputmode="decimal" value="40"></div>
-          <div class="field"><label for="savings">預貯金 <span>万円</span></label><input id="savings" type="number" min="0" inputmode="numeric" value="500"></div>
-          <div class="field"><label for="children">子どもの人数 <span>人</span></label><input id="children" type="number" min="0" max="8" inputmode="numeric" value="2"></div>
-          <div class="field"><label for="living">毎月の生活費 <span>万円</span></label><input id="living" type="number" min="0" step="0.1" inputmode="decimal" value="22"></div>
-          <div class="field"><label for="otherDebt">他の借入返済 <span>万円/月</span></label><input id="otherDebt" type="number" min="0" step="0.1" inputmode="decimal" value="0"></div>
-          <div class="field"><label for="car">車関連費 <span>万円/月</span></label><input id="car" type="number" min="0" step="0.1" inputmode="decimal" value="4"></div>
+          <div class="field"><label for="age">本人年齢 <span>歳</span></label><input id="age" type="number" min="18" max="79" value="40"></div>
+          <div class="field"><label for="spouseAge">配偶者年齢 <span>歳・いない場合0</span></label><input id="spouseAge" type="number" min="0" max="79" value="38"></div>
+          <div class="field"><label for="retireAge">退職予定年齢 <span>歳</span></label><input id="retireAge" type="number" min="50" max="80" value="65"></div>
+          <div class="field"><label for="income">世帯年収 <span>万円</span></label><input id="income" type="number" min="1" value="600"></div>
+          <div class="field"><label for="takehome">手取り月収 <span>万円</span></label><input id="takehome" type="number" min="1" step="0.1" value="40"></div>
+          <div class="field"><label for="savings">預貯金 <span>万円</span></label><input id="savings" type="number" min="0" value="500"></div>
+          <div class="field"><label for="children">子どもの人数 <span>人</span></label><input id="children" type="number" min="0" max="8" value="2"></div>
+          <div class="field field-wide"><label for="childAges">子どもの年齢 <span>例：12,8　いない場合は空欄</span></label><input id="childAges" type="text" inputmode="numeric" placeholder="12,8" value=""></div>
         </div>
       </section>
 
       <section class="card">
-        <div class="section-title">
-          <span class="step">2</span>
-          <h2>購入予定</h2>
-        </div>
-
+        <div class="section-title"><span class="step">2</span><h2>毎月の家計</h2></div>
         <div class="form-grid">
-          <div class="field"><label for="price">希望住宅価格 <span>万円</span></label><input id="price" type="number" min="1" inputmode="numeric" value="4500"></div>
-          <div class="field"><label for="down">頭金予定額 <span>万円</span></label><input id="down" type="number" min="0" inputmode="numeric" value="300"></div>
-          <div class="field"><label for="years">返済期間 <span>年</span></label><input id="years" type="number" min="5" max="50" inputmode="numeric" value="35"></div>
-          <div class="field"><label for="rate">想定金利 <span>年率 %</span></label><input id="rate" type="number" min="0" max="10" step="0.01" inputmode="decimal" value="1.2"></div>
+          <div class="field"><label for="living">基本生活費 <span>万円/月</span></label><input id="living" type="number" min="0" step="0.1" value="22"></div>
+          <div class="field"><label for="car">車関連費 <span>万円/月</span></label><input id="car" type="number" min="0" step="0.1" value="4"></div>
+          <div class="field"><label for="otherDebt">他の借入返済 <span>万円/月</span></label><input id="otherDebt" type="number" min="0" step="0.1" value="0"></div>
+          <div class="field"><label for="educationSave">教育費・教育積立 <span>万円/月</span></label><input id="educationSave" type="number" min="0" step="0.1" value="0"></div>
+          <div class="field"><label for="retirementSave">老後積立 <span>万円/月</span></label><input id="retirementSave" type="number" min="0" step="0.1" value="0"></div>
         </div>
+        <div class="method-note">基本生活費は、住宅ローン返済・車関連費・他の借入返済を除いて入力してください。</div>
+      </section>
 
+      <section class="card">
+        <div class="section-title"><span class="step">3</span><h2>購入予定</h2></div>
+        <div class="form-grid">
+          <div class="field"><label for="price">希望住宅価格 <span>万円</span></label><input id="price" type="number" min="1" value="4500"></div>
+          <div class="field"><label for="down">頭金予定額 <span>万円</span></label><input id="down" type="number" min="0" value="300"></div>
+          <div class="field"><label for="years">返済期間 <span>年</span></label><input id="years" type="number" min="5" max="50" value="35"></div>
+          <div class="field"><label for="rate">想定金利 <span>年率 %</span></label><input id="rate" type="number" min="0" max="10" step="0.01" value="1.2"></div>
+        </div>
         <div id="errorBox" class="error-box" role="alert" aria-live="polite"></div>
         <button id="diagnoseBtn" class="primary-btn" type="button">無料で簡易診断する</button>
       </section>
 
       <section id="result" class="card result-card" hidden>
-        <div class="section-title">
-          <span class="step result-step">✓</span>
-          <h2>診断結果</h2>
-        </div>
-
+        <div class="section-title"><span class="step result-step">✓</span><h2>診断結果</h2></div>
         <div id="judgement" class="judgement"></div>
 
+        <h3 class="subhead">家計から見た購入予算</h3>
         <div class="metrics">
           <div class="metric"><span>希望住宅価格</span><strong id="mPrice">-</strong></div>
-          <div class="metric highlight"><span>推奨住宅予算の目安</span><strong id="mSafe">-</strong></div>
+          <div class="metric highlight"><span>安心購入予算の目安</span><strong id="mSafe">-</strong></div>
+          <div class="metric"><span>希望価格との差</span><strong id="mGap">-</strong></div>
           <div class="metric"><span>借入額</span><strong id="mLoan">-</strong></div>
           <div class="metric"><span>月返済額</span><strong id="mPay">-</strong></div>
-          <div class="metric"><span>返済＋他借入／手取り</span><strong id="mRatio">-</strong></div>
+          <div class="metric"><span>手取りに対する返済割合</span><strong id="mCashRatio">-</strong></div>
           <div class="metric"><span>購入後の預貯金</span><strong id="mReserve">-</strong></div>
+          <div class="metric"><span>退職時点の残債目安</span><strong id="mRetireBalance">-</strong></div>
         </div>
 
-        <div id="summary" class="summary"></div>
+        <h3 class="subhead">金融機関審査の参考指標</h3>
+        <div class="metrics">
+          <div class="metric"><span>参考総返済負担率</span><strong id="mDti">-</strong></div>
+          <div class="metric"><span>フラット35基準の参考値</span><strong id="mFlat35">-</strong></div>
+        </div>
+        <div class="source-note">※総返済負担率は入力した年収・返済条件から算出した参考値です。実際の審査結果や借入可能額を保証するものではありません。</div>
 
+        <div id="summary" class="summary"></div>
         <h3 class="subhead">確認しておきたいポイント</h3>
         <div id="risks"></div>
 
@@ -112,11 +111,10 @@
         <div class="cta-card">
           <div class="cta-kicker">契約・申込の前に</div>
           <h3>第三者FPの詳細診断へ</h3>
-          <p>教育費、老後資金、固定資産税、修繕費、車の買替え、住宅取得諸費用まで個別確認します。</p>
+          <p>教育費、老後資金、固定資産税、修繕、車の買替え、住宅取得諸費用まで個別確認します。</p>
           <a href="mailto:info@example.com?subject=住宅購入予算の詳細診断について" class="cta-btn">FPに相談する</a>
-          <small>公開時に実際のメール・LINE・予約フォームへ変更してください。</small>
+          <small>公開前に実際のメール・LINE・予約フォームへ変更してください。</small>
         </div>
-
         <button id="retryBtn" class="secondary-btn" type="button">条件を変更して再診断</button>
       </section>
     </section>
@@ -124,16 +122,16 @@
     <section id="about" class="screen" hidden>
       <section class="card info-card">
         <h2>この診断について</h2>
-        <p>本アプリは、住宅ローンの「借入可能額」ではなく、家計の余力を考慮した住宅購入予算の目安を確認するための簡易ツールです。</p>
-        <p>本番運用では、教育費、老後資金、税金、保険、修繕、住宅取得諸費用、団信、金利上昇等を個別に確認する詳細診断へつなげます。</p>
-        <div class="notice">本診断は融資承認、住宅ローン審査、将来の家計状況、安全な購入を保証するものではありません。</div>
+        <p>金融機関が「貸せるか」を見る審査指標と、購入後の生活を守るための「家計から見た安心予算」を分けて表示します。</p>
+        <p>安心購入予算は、生活費、車関連費、他借入、教育・老後積立、住宅維持費、予備資金、退職時残債等を考慮した独自の簡易診断です。</p>
+        <div class="notice">本診断は融資承認、将来の家計、安全な住宅購入を保証するものではありません。最終判断は個別の資金計画で行ってください。</div>
       </section>
     </section>
 
     <section id="consult" class="screen" hidden>
       <section class="card info-card">
         <h2>FPに相談する</h2>
-        <p>住宅会社から提示された資金計画や見積書をもとに、「この金額で本当に大丈夫か」を第三者の立場で確認するサービスへ発展させる想定です。</p>
+        <p>住宅会社から提示された見積書や資金計画をもとに、「その金額で本当に大丈夫か」を第三者の立場で確認します。</p>
         <a href="mailto:info@example.com?subject=住宅購入予算の相談" class="primary-link">相談する</a>
       </section>
     </section>
@@ -141,15 +139,14 @@
     <section id="iosInstall" class="install-help" hidden>
       <button id="closeInstallHelp" class="close-x" type="button">×</button>
       <h3>iPhoneにアプリとして追加</h3>
-      <p>Safariでこのページを開き、画面下の<strong>共有ボタン</strong> → <strong>「ホーム画面に追加」</strong>を選択してください。</p>
+      <p>Safariでこのページを開き、共有ボタン → 「ホーム画面に追加」を選択してください。</p>
     </section>
 
     <footer class="footer">
-      <p>住宅購入予算診断 PWA</p>
-      <p>※現在は事業検証用MVPです。</p>
+      <p>住宅購入予算診断 v2</p>
+      <p>※簡易診断MVP。個別相談では詳細なキャッシュフロー確認が必要です。</p>
     </footer>
   </main>
-
   <script src="./app.js" defer></script>
 </body>
 </html>
