@@ -1,4 +1,4 @@
-
+す
 'use strict';
 
 const $ = (id) => document.getElementById(id);
@@ -115,6 +115,11 @@ function diagnose() {
 
   // 収入減・突発費に備える月次余力。手取りの8%、最低2万円。
   const monthlyBuffer = Math.max(2.0, v.takehome * 0.08);
+  const educationPeakBuffer = v.childAges.reduce((sum, age) => {
+  if (age >= 16 && age <= 22) return sum + 2.0;
+  if (age >= 10 && age <= 15) return sum + 1.0;
+  return sum;
+}, 0);
 
   // 家計から見た住宅ローン返済余力。
   const cashflowCapacity = Math.max(
@@ -124,7 +129,9 @@ function diagnose() {
       - v.car
       - v.otherDebt
       - v.educationSave
+    - - educationPeakBuffer
       - v.retirementSave
+    
       - monthlyBuffer
       - ownershipCost
   );
