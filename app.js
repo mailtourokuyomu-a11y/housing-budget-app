@@ -192,6 +192,7 @@ function diagnose() {
   $('mPay').textContent = `${payment.toFixed(1)}万円/月`;
   $('mCashRatio').textContent = `${cashRatio.toFixed(1)}%`;
   $('mReserve').textContent = man(reserveAfter);
+  $('mEducationReserve').textContent = man(educationReserve);
   $('mRetireBalance').textContent = man(retireBalance);
   $('mDti').textContent = `${dti.toFixed(1)}%`;
   $('mFlat35').textContent = `年収区分の基準 ${flat35Limit}%以下`;
