@@ -1,4 +1,4 @@
-す
+
 'use strict';
 
 const $ = (id) => document.getElementById(id);
@@ -129,7 +129,7 @@ function diagnose() {
       - v.car
       - v.otherDebt
       - v.educationSave
-    - - educationPeakBuffer
+    -- educationPeakBuffer
       - v.retirementSave
     
       - monthlyBuffer
