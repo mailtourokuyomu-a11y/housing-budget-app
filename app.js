@@ -204,6 +204,9 @@ function diagnose() {
   const risks = [];
   risks.push(`住宅所有後の税・保険・修繕等として月約${ownershipCost.toFixed(1)}万円を簡易的に見込んでいます。`);
   risks.push(`家計の突発支出・収入減に備える余力として月約${monthlyBuffer.toFixed(1)}万円を確保して計算しています。`);
+  if (educationReserve > 0) {
+  risks.push(`教育費安全資金${Math.round(educationReserve).toLocaleString('ja-JP')}万円は、子どもの年齢から22歳までの教育費ピークに備える追加安全資金として算出しています。`);
+}
   if (reserveAfter < reserveNeed) risks.push(`購入後預貯金が、生活防衛資金の簡易目安（約${Math.round(reserveNeed).toLocaleString('ja-JP')}万円）を下回ります。`);
   if (cashRatio > 25) risks.push(`住宅ローン返済だけで手取り月収の${cashRatio.toFixed(1)}%です。家計余力を確認してください。`);
   if (dti > flat35Limit) risks.push(`入力条件による参考総返済負担率が${dti.toFixed(1)}%で、フラット35の年収区分別基準${flat35Limit}%を上回っています。`);
