@@ -129,7 +129,7 @@ function diagnose() {
       - v.car
       - v.otherDebt
       - v.educationSave
-    -- educationPeakBuffer
+    - educationPeakBuffer
       - v.retirementSave
     
       - monthlyBuffer
