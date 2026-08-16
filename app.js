@@ -202,19 +202,26 @@ function diagnose() {
     : '希望価格は簡易診断上の安心購入予算の範囲内です。ただし、教育費・老後資金・住宅維持費・収入減少などの個別確認は必要です。';
 
   const risks = [];
-  risks.push(`住宅所有後の税・保険・修繕等として月約${ownershipCost.toFixed(1)}万円を簡易的に見込んでいます。`);
-  risks.push(`家計の突発支出・収入減に備える余力として月約${monthlyBuffer.toFixed(1)}万円を確保して計算しています。`);
-  if (educationReserve > 0) {
-  risks.push(`教育費安全資金${Math.round(educationReserve).toLocaleString('ja-JP')}万円は、子どもの年齢から22歳までの教育費ピークに備える追加安全資金として算出しています。`);
+
+if (reserveAfter < reserveNeed) {
+  risks.push(`購入後預貯金が、生活防衛資金の簡易目安（約${Math.round(reserveNeed).toLocaleString('ja-JP')}万円）を下回ります。`);
 }
-  if (reserveAfter < reserveNeed) risks.push(`購入後預貯金が、生活防衛資金の簡易目安（約${Math.round(reserveNeed).toLocaleString('ja-JP')}万円）を下回ります。`);
-  if (cashRatio > 25) risks.push(`住宅ローン返済だけで手取り月収の${cashRatio.toFixed(1)}%です。家計余力を確認してください。`);
-  if (dti > flat35Limit) risks.push(`入力条件による参考総返済負担率が${dti.toFixed(1)}%で、フラット35の年収区分別基準${flat35Limit}%を上回っています。`);
-  if (v.children > 0) risks.push(`子ども${v.children}人の教育費ピークと住宅ローン返済が重なる時期を確認してください。`);
-  if (childPeakSoon) risks.push('10〜18歳のお子さまがいるため、近い将来の教育費増加を特に確認してください。');
-  if (retireBalance > 0) risks.push(`退職予定年齢${Math.round(v.retireAge)}歳時点の残債は約${Math.round(retireBalance).toLocaleString('ja-JP')}万円の試算です。退職後返済の原資を確認してください。`);
-  if (v.car >= 4) risks.push(`車関連費が月${v.car.toFixed(1)}万円です。車検・保険・タイヤ・買替え費用も長期計画に含めてください。`);
-  risks.push('外構、地盤改良、登記、引越し、家具家電等の住宅取得諸費用は別途見積確認が必要です。');
+
+if (cashRatio > 25) {
+  risks.push(`住宅ローン返済だけで手取り月収の${cashRatio.toFixed(1)}%です。家計余力を確認してください。`);
+}
+
+if (educationReserve > 0) {
+  risks.push(`教育費安全資金${Math.round(educationReserve).toLocaleString('ja-JP')}万円を見込んでいます。子どもの年齢と教育費ピークを確認してください。`);
+}
+
+if (retireBalance > 0) {
+  risks.push(`退職予定年齢${Math.round(v.retireAge)}歳時点の残債は約${Math.round(retireBalance).toLocaleString('ja-JP')}万円の試算です。退職後返済の原資を確認してください。`);
+}
+
+if (stressIncrease >= 2) {
+  risks.push(`金利が1.0%上昇した場合、月返済額が約${stressIncrease.toFixed(1)}万円増える試算です。`);
+}
 
   $('risks').innerHTML = risks.map(r => `<div class="risk-item">・${r}</div>`).join('');
 
