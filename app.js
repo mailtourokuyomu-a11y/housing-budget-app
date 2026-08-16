@@ -115,9 +115,9 @@ function diagnose() {
 
   // 収入減・突発費に備える月次余力。手取りの8%、最低2万円。
   const monthlyBuffer = Math.max(2.0, v.takehome * 0.08);
-  const educationPeakBuffer = v.childAges.reduce((sum, age) => {
-  if (age >= 16 && age <= 22) return sum + 2.0;
-  if (age >= 10 && age <= 15) return sum + 1.0;
+  const educationReserve = v.childAges.reduce((sum, age) => {
+  if (age >= 16 && age <= 22) return sum + 2.0 * 12 * Math.max(0, 22 - age);
+  if (age >= 10 && age <= 15) return sum + 1.0* 12 * Math.max(0, 22 - age);
   return sum;
 }, 0);
 
@@ -129,7 +129,7 @@ function diagnose() {
       - v.car
       - v.otherDebt
       - v.educationSave
-    - educationPeakBuffer
+    
       - v.retirementSave
     
       - monthlyBuffer
@@ -143,7 +143,7 @@ function diagnose() {
   // 退職後の返済を長く残し過ぎないよう、安心予算は「退職＋5歳」までを目安に逆算。
   const safeYears = Math.max(5, Math.min(v.years, v.retireAge + 5 - v.age));
   const safeLoan = principalFromPayment(safePayment, v.rate, safeYears);
-  const safePrice = Math.max(0, safeLoan + safeDown);
+  const safePrice = Math.max(0, safeLoan + safeDown - educationReserve);
 
   const cashRatio = v.takehome > 0 ? (payment / v.takehome) * 100 : 0;
   const annualDebt = (payment + v.otherDebt) * 12;
