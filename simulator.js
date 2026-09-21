@@ -40,7 +40,9 @@ function simulate(v, options = {}) {
     const retirement = v.retirementSave * 12;
     const propertyTax = v.propertyTax * Math.pow(1 + v.inflation / 100, y - 1);
     const insurance = v.insurance * Math.pow(1 + v.inflation / 100, y - 1);
-    const repair = y % Math.max(1, v.repairCycle) === 0 ? v.repair : v.repairReserve;
+    const repairReserve = Math.max(0, v.repairReserve);
+    const repairEvent = y % Math.max(1, v.repairCycle) === 0 ? Math.max(0, v.repair) : 0;
+    const repair = repairReserve + repairEvent;
     const event = y === v.eventYear ? v.eventAmount : 0;
     const mortgagePayment = mortgage * 12;
     const totalOut = living + education + car + otherDebt + retirement + propertyTax + insurance + repair + event + mortgagePayment;
