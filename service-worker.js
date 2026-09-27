@@ -1,5 +1,5 @@
 
-const CACHE = 'housing-budget-pwa-v1';
+const CACHE = 'housing-budget-pwa-v2';
 const ASSETS = [
   './',
   './index.html',
