@@ -213,13 +213,7 @@ function diagnose() {
     usableDown
   );
 
-  // 住宅所有後の固定資産税・火災保険・修繕などを
-  // 簡易的に住宅価格の年0.8%として見積もる。
-  // 最低月2万円。
-  const ownershipCost = Math.max(
-    2.0,
-    v.price * 0.008 / 12
-  );
+  
 
   // 収入減・突発支出に備える月次余力。
   // 手取りの8%、最低2万円。
@@ -251,9 +245,24 @@ function diagnose() {
     0
   );
 
-  // 購入後も毎月残しておきたい資金を確保した上で、
-  // 住宅ローンに回せる金額を計算。
-  const cashflowCapacity = Math.max(
+ // 手取りの25%を住宅ローン返済額の目安上限とする。
+const ratioCapacity = v.takehome * 0.25;
+
+// 住宅維持費は「希望価格」ではなく、算出中の安心購入予算に応じて
+// 年0.8%（最低月2万円）で見積もる。
+// 同じ家計条件なら、希望価格を変えても安心購入予算は変わらない。
+const ownershipCostForPrice = (priceMan) =>
+  Math.max(2.0, priceMan * 0.008 / 12);
+
+let safePrice = Math.max(0, safeDown);
+let safePayment = 0;
+let cashflowCapacity = 0;
+let ownershipCost = 0;
+
+for (let i = 0; i < 30; i += 1) {
+  ownershipCost = ownershipCostForPrice(safePrice);
+
+  cashflowCapacity = Math.max(
     0,
     v.takehome
       - v.living
@@ -265,36 +274,29 @@ function diagnose() {
       - ownershipCost
   );
 
-  // 手取りの25%を住宅ローン返済額の目安上限とする。
-  const ratioCapacity =
-    v.takehome * 0.25;
-
-  const safePayment = Math.min(
+  safePayment = Math.min(
     cashflowCapacity,
     ratioCapacity
-  );
-
-  // 退職後の返済を残し過ぎないよう、
-  // 原則として退職時点までに返済できる期間で
-  // 安心購入予算を逆算。
-  const safeYears = Math.max(
-    5,
-    Math.min(
-      v.years,
-      v.retireAge - v.age
-    )
   );
 
   const safeLoan = principalFromPayment(
     safePayment,
     v.rate,
-    safeYears
+    v.years
   );
 
-  const safePrice = Math.max(
+  const nextSafePrice = Math.max(
     0,
     safeLoan + safeDown
   );
+
+  if (Math.abs(nextSafePrice - safePrice) < 0.01) {
+    safePrice = nextSafePrice;
+    break;
+  }
+
+  safePrice = nextSafePrice;
+}
 
   const cashRatio =
     v.takehome > 0
