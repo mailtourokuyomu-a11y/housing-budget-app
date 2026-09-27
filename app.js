@@ -182,7 +182,12 @@ function diagnose() {
     v.years
   );
 
-  const stressPayment = monthlyPayment(
+    const stressPayment05 = monthlyPayment(
+    loan,
+    v.rate + 0.5,
+    v.years
+  );
+const stressPayment = monthlyPayment(
     loan,
     v.rate + 1.0,
     v.years
@@ -341,7 +346,12 @@ for (let i = 0; i < 30; i += 1) {
       a => a >= 10 && a <= 18
     );
 
-  const stressIncrease =
+    const stressIncrease05 =
+    Math.max(
+      0,
+      stressPayment05 - payment
+    );
+const stressIncrease =
     Math.max(
       0,
       stressPayment - payment
@@ -480,7 +490,14 @@ for (let i = 0; i < 30; i += 1) {
       )
       .join('');
 
-  $('stressPay').textContent =
+    $('stressPay05').textContent =
+    `${stressPayment05.toFixed(1)}万円/月`;
+
+  $('stressDiff05').textContent =
+    `現在の想定より月約${stressIncrease05.toFixed(
+      1
+    )}万円増える試算です。`;
+$('stressPay').textContent =
     `${stressPayment.toFixed(1)}万円/月`;
 
   $('stressDiff').textContent =
