@@ -26,7 +26,7 @@ button,input,a{font:inherit} button,a{-webkit-tap-highlight-color:transparent}
 .field label{display:block;margin-bottom:6px;color:#34424f;font-size:14px;font-weight:700}.field label span{color:var(--subtext);font-size:12px;font-weight:500}
 .field input{width:100%;min-height:48px;padding:10px 12px;border:1px solid #cfd9e0;border-radius:11px;background:#fff;color:var(--text);font-size:16px;outline:none}
 .field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,170,.12)}
-.primary-btn,.secondary-btn,.primary-link,.cta-btn{display:block;width:100%;min-height:52px;border-radius:12px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer}
+.primary-btn,.secondary-btn,.primary-link,.cta-btn,.simulator-btn{display:block;width:100%;min-height:52px;border-radius:12px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer}
 .primary-btn{margin-top:20px;border:0;background:var(--navy);color:#fff}.primary-btn:active{transform:translateY(1px)}
 .secondary-btn{margin-top:18px;border:1px solid #c8d3da;background:#fff;color:var(--navy)}
 .error-box{display:none;margin-top:15px;padding:12px 14px;border-radius:10px;background:#fff0ee;color:var(--red);font-size:14px;font-weight:700}.error-box:not(:empty){display:block}
@@ -39,6 +39,10 @@ button,input,a{font:inherit} button,a{-webkit-tap-highlight-color:transparent}
 .risk-item{margin:9px 0;padding:12px 14px;border-radius:10px;background:#fff7ed;color:#704214;font-size:14px}
 .stress-box{margin-top:18px;padding:17px;border-radius:14px;background:#f8f3ec}.stress-label{color:var(--subtext);font-size:13px}
 .stress-box strong{display:block;margin:4px 0;color:var(--orange);font-size:23px}.stress-diff{font-size:13px}
+.simulator-card{margin-top:22px;padding:20px;border:1px solid #b7d7e9;border-radius:16px;background:#eef6fb;color:var(--navy)}
+.simulator-kicker{color:#52616d;font-size:12px;font-weight:700}
+.simulator-card h3{margin:4px 0 8px;font-size:21px}.simulator-card p{margin:0 0 15px;font-size:14px}
+.simulator-btn{padding:13px;background:var(--navy);color:#fff}
 .cta-card{margin-top:22px;padding:20px;border-radius:16px;background:var(--navy);color:#fff}.cta-kicker{color:#bcd8e9;font-size:12px;font-weight:700}
 .cta-card h3{margin:4px 0 8px;font-size:21px}.cta-card p{margin:0 0 15px;font-size:14px}.cta-btn{padding:13px;background:#fff;color:var(--navy)}
 .cta-card small{display:block;margin-top:10px;color:#d8e5ed;font-size:11px}.info-card h2{margin-top:0;color:var(--navy)}

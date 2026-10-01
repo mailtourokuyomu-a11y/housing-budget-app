@@ -28,7 +28,9 @@ function simulate(v, options = {}) {
   const livingMultiplier = options.livingMultiplier ?? 1;
   const loan = Math.max(0, v.price - v.down);
   const mortgage = monthlyPayment(loan, rate, v.loanYears);
-  let savings = v.savings - v.down - v.acquisitionCost - v.movingCost;
+  const startingSavings = v.savings - v.down - v.acquisitionCost - v.movingCost;
+  let savings = startingSavings;
+  const reserveNeed = Math.max(150, (v.living + v.car + v.otherDebt) * 6);
   const rows = [];
 
   for (let y = 1; y <= years; y++) {
@@ -51,13 +53,28 @@ function simulate(v, options = {}) {
     const balance = remainingBalance(loan, rate, v.loanYears, y);
     rows.push({year:y,income,living,education,car,otherDebt,retirement,propertyTax,insurance,repair,event,mortgagePayment,cashFlow,savings,mortgageBalance:balance});
   }
-  return { rows, mortgage, loan, finalSavings:savings, minSavings:Math.min(...rows.map(r=>r.savings)), minYear:rows.reduce((a,b)=>b.savings<a.savings?b:a,rows[0]).year };
+
+  let minSavings = startingSavings;
+  let minYear = 0;
+  for (const row of rows) {
+    if (row.savings < minSavings) {
+      minSavings = row.savings;
+      minYear = row.year;
+    }
+  }
+
+  return { rows, mortgage, loan, startingSavings, finalSavings:savings, minSavings, minYear, reserveNeed };
 }
 
 function assess(result) {
-  if (result.minSavings < 0) return {cls:'bad', label:'🔴 要見直し', reason:`10年以内の${result.minYear}年目に預貯金がマイナスになる試算です。`};
-  if (result.minSavings < 150) return {cls:'warn', label:'🟡 注意', reason:'預貯金はマイナスになりませんが、生活防衛資金の目安を下回る可能性があります。'};
-  return {cls:'good', label:'🟢 余力あり', reason:'10年間の試算では預貯金がマイナスにならず、最低残高も一定の余力を確保しています。'};
+  if (result.minSavings < 0) {
+    const when = result.minYear === 0 ? '購入時点' : `10年以内の${result.minYear}年目`;
+    return {cls:'bad', label:'🔴 負担が大きい可能性', reason:`${when}に預貯金がマイナスになる試算です。条件の見直しが必要です。`};
+  }
+  if (result.minSavings < result.reserveNeed) {
+    return {cls:'warn', label:'🟡 注意が必要', reason:`最低残高が生活防衛資金の簡易目安（約${Math.round(result.reserveNeed).toLocaleString('ja-JP')}万円）を下回る試算です。`};
+  }
+  return {cls:'good', label:'🟢 安心できる範囲', reason:'入力条件による10年間の試算では、預貯金がマイナスにならず生活防衛資金の簡易目安も維持します。将来を保証する判定ではありません。'};
 }
 
 window.HousingSimulator = { simulate, assess, monthlyPayment };

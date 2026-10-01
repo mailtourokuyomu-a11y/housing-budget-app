@@ -1,636 +1,116 @@
 'use strict';
 
-const $ = (id) => document.getElementById(id);
-const valueOf = (id) => Number.parseFloat($(id).value);
-const man = (n) => `${Math.round(Math.max(0, n)).toLocaleString('ja-JP')}万円`;
+const $ = id => document.getElementById(id);
+const valueOf = id => Number.parseFloat($(id).value);
+const man = n => `${Math.round(Math.max(0,n)).toLocaleString('ja-JP')}万円`;
 
-function monthlyPayment(principalMan, annualRate, years) {
-  const principal = Math.max(0, principalMan) * 10000;
-  const months = Math.max(1, Math.round(years * 12));
-  const r = annualRate / 100 / 12;
-  if (r === 0) return principal / months / 10000;
-  const f = Math.pow(1 + r, months);
-  return principal * r * f / (f - 1) / 10000;
+function monthlyPayment(principalMan, annualRate, years){
+  const principal=Math.max(0,principalMan)*10000, months=Math.max(1,Math.round(years*12)), r=annualRate/100/12;
+  if(r===0)return principal/months/10000;
+  const f=Math.pow(1+r,months);
+  return principal*r*f/(f-1)/10000;
 }
-
-function principalFromPayment(paymentMan, annualRate, years) {
-  const payment = Math.max(0, paymentMan) * 10000;
-  const months = Math.max(1, Math.round(years * 12));
-  const r = annualRate / 100 / 12;
-  if (r === 0) return payment * months / 10000;
-  const f = Math.pow(1 + r, months);
-  return payment * (f - 1) / (r * f) / 10000;
+function principalFromPayment(paymentMan, annualRate, years){
+  const payment=Math.max(0,paymentMan)*10000, months=Math.max(1,Math.round(years*12)), r=annualRate/100/12;
+  if(r===0)return payment*months/10000;
+  const f=Math.pow(1+r,months);
+  return payment*(f-1)/(r*f)/10000;
 }
-
-function remainingBalance(principalMan, annualRate, years, paidYears) {
-  const principal = Math.max(0, principalMan) * 10000;
-  const totalMonths = Math.max(1, Math.round(years * 12));
-  const paidMonths = Math.max(
-    0,
-    Math.min(totalMonths, Math.round(paidYears * 12))
-  );
-
-  if (paidMonths >= totalMonths) return 0;
-
-  const r = annualRate / 100 / 12;
-  const payment = monthlyPayment(principalMan, annualRate, years) * 10000;
-
-  if (r === 0) {
-    return Math.max(0, principal - payment * paidMonths) / 10000;
-  }
-
-  const f = Math.pow(1 + r, paidMonths);
-  const balance = principal * f - payment * (f - 1) / r;
-
-  return Math.max(0, balance) / 10000;
+function remainingBalance(principalMan,annualRate,years,paidYears){
+  const principal=Math.max(0,principalMan)*10000,totalMonths=Math.max(1,Math.round(years*12));
+  const paidMonths=Math.max(0,Math.min(totalMonths,Math.round(paidYears*12)));
+  if(paidMonths>=totalMonths)return 0;
+  const r=annualRate/100/12,payment=monthlyPayment(principalMan,annualRate,years)*10000;
+  if(r===0)return Math.max(0,principal-payment*paidMonths)/10000;
+  const f=Math.pow(1+r,paidMonths);
+  return Math.max(0,principal*f-payment*(f-1)/r)/10000;
 }
-
-function parseChildAges(text) {
-  if (!text.trim()) return [];
-
-  return text
-    .split(/[,\s、]+/)
-    .map(x => Number.parseInt(x, 10))
-    .filter(x => Number.isFinite(x) && x >= 0 && x <= 30);
+function parseChildAges(text){
+  if(!text.trim())return [];
+  return text.split(/[,\s、]+/).map(x=>Number.parseInt(x,10)).filter(x=>Number.isFinite(x)&&x>=0&&x<=30);
 }
-
-function getValues() {
-  return {
-    age: valueOf('age'),
-    spouseAge: valueOf('spouseAge'),
-    retireAge: valueOf('retireAge'),
-    income: valueOf('income'),
-    takehome: valueOf('takehome'),
-    savings: valueOf('savings'),
-    children: valueOf('children'),
-    childAges: parseChildAges($('childAges').value),
-    living: valueOf('living'),
-    car: valueOf('car'),
-    otherDebt: valueOf('otherDebt'),
-    educationSave: valueOf('educationSave'),
-    retirementSave: valueOf('retirementSave'),
-    price: valueOf('price'),
-    down: valueOf('down'),
-    years: valueOf('years'),
-    rate: valueOf('rate')
-  };
+function getValues(){
+  return {age:valueOf('age'),spouseAge:valueOf('spouseAge'),retireAge:valueOf('retireAge'),income:valueOf('income'),takehome:valueOf('takehome'),savings:valueOf('savings'),children:valueOf('children'),childAges:parseChildAges($('childAges').value),living:valueOf('living'),car:valueOf('car'),otherDebt:valueOf('otherDebt'),educationSave:valueOf('educationSave'),retirementSave:valueOf('retirementSave'),price:valueOf('price'),down:valueOf('down'),years:valueOf('years'),rate:valueOf('rate')};
 }
-
-function validate(v) {
-  const e = [];
-
-  if (!Number.isFinite(v.age) || v.age < 18 || v.age > 79) {
-    e.push('本人年齢は18〜79歳で入力してください。');
-  }
-
-  if (!Number.isFinite(v.spouseAge) || v.spouseAge < 0 || v.spouseAge > 79) {
-    e.push('配偶者年齢を確認してください。');
-  }
-
-  if (
-    !Number.isFinite(v.retireAge) ||
-    v.retireAge < 50 ||
-    v.retireAge > 80 ||
-    v.retireAge <= v.age
-  ) {
-    e.push('退職予定年齢は本人年齢より高く入力してください。');
-  }
-
-  if (!Number.isFinite(v.income) || v.income <= 0) {
-    e.push('世帯年収を入力してください。');
-  }
-
-  if (!Number.isFinite(v.takehome) || v.takehome <= 0) {
-    e.push('手取り月収を入力してください。');
-  }
-
-  if (!Number.isFinite(v.savings) || v.savings < 0) {
-    e.push('預貯金を確認してください。');
-  }
-
-  if (!Number.isFinite(v.children) || v.children < 0 || v.children > 8) {
-    e.push('子どもの人数を確認してください。');
-  }
-
-  if (!Number.isFinite(v.living) || v.living < 0) {
-    e.push('基本生活費を確認してください。');
-  }
-
-  if (!Number.isFinite(v.car) || v.car < 0) {
-    e.push('車関連費を確認してください。');
-  }
-
-  if (!Number.isFinite(v.otherDebt) || v.otherDebt < 0) {
-    e.push('他の借入返済を確認してください。');
-  }
-
-  if (!Number.isFinite(v.educationSave) || v.educationSave < 0) {
-    e.push('教育費・教育積立を確認してください。');
-  }
-
-  if (!Number.isFinite(v.retirementSave) || v.retirementSave < 0) {
-    e.push('老後積立を確認してください。');
-  }
-
-  if (!Number.isFinite(v.price) || v.price <= 0) {
-    e.push('希望住宅価格を入力してください。');
-  }
-
-  if (!Number.isFinite(v.down) || v.down < 0 || v.down > v.price) {
-    e.push('頭金を確認してください。');
-  }
-
-  if (!Number.isFinite(v.years) || v.years < 5 || v.years > 50) {
-    e.push('返済期間は5〜50年で入力してください。');
-  }
-
-  if (!Number.isFinite(v.rate) || v.rate < 0 || v.rate > 10) {
-    e.push('想定金利は0〜10%で入力してください。');
-  }
-
-  if (
-    v.children > 0 &&
-    v.childAges.length > 0 &&
-    v.childAges.length !== v.children
-  ) {
-    e.push(
-      '子どもの年齢は、人数と同じ数だけ入力してください（例：12,8）。'
-    );
-  }
-
+function validate(v){
+  const e=[];
+  if(!Number.isFinite(v.age)||v.age<18||v.age>79)e.push('本人年齢は18〜79歳で入力してください。');
+  if(!Number.isFinite(v.spouseAge)||v.spouseAge<0||v.spouseAge>79)e.push('配偶者年齢を確認してください。');
+  if(!Number.isFinite(v.retireAge)||v.retireAge<50||v.retireAge>80||v.retireAge<=v.age)e.push('退職予定年齢は本人年齢より高く入力してください。');
+  if(!Number.isFinite(v.income)||v.income<=0)e.push('世帯年収を入力してください。');
+  if(!Number.isFinite(v.takehome)||v.takehome<=0)e.push('手取り月収を入力してください。');
+  if(!Number.isFinite(v.savings)||v.savings<0)e.push('預貯金を確認してください。');
+  if(!Number.isFinite(v.children)||v.children<0||v.children>8)e.push('子どもの人数を確認してください。');
+  for(const [k,label] of [['living','基本生活費'],['car','車関連費'],['otherDebt','他の借入返済'],['educationSave','教育費・教育積立'],['retirementSave','老後積立']])if(!Number.isFinite(v[k])||v[k]<0)e.push(`${label}を確認してください。`);
+  if(!Number.isFinite(v.price)||v.price<=0)e.push('希望住宅価格を入力してください。');
+  if(!Number.isFinite(v.down)||v.down<0||v.down>v.price)e.push('頭金を確認してください。');
+  if(!Number.isFinite(v.years)||v.years<5||v.years>50)e.push('返済期間は5〜50年で入力してください。');
+  if(!Number.isFinite(v.rate)||v.rate<0||v.rate>10)e.push('想定金利は0〜10%で入力してください。');
+  if(v.children>0&&v.childAges.length>0&&v.childAges.length!==v.children)e.push('子どもの年齢は、人数と同じ数だけ入力してください（例：12,8）。');
   return e;
 }
-
-function diagnose() {
-  const v = getValues();
-  const errors = validate(v);
-  const eb = $('errorBox');
-
-  if (errors.length) {
-    eb.innerHTML = errors.map(x => `・${x}`).join('<br>');
-    eb.style.display = 'block';
-    return;
+function diagnose(){
+  const v=getValues(),errors=validate(v),eb=$('errorBox');
+  if(errors.length){eb.innerHTML=errors.map(x=>`・${x}`).join('<br>');eb.style.display='block';return;}
+  eb.style.display='none';
+  const loan=Math.max(0,v.price-v.down),payment=monthlyPayment(loan,v.rate,v.years);
+  const stressPayment05=monthlyPayment(loan,v.rate+.5,v.years),stressPayment=monthlyPayment(loan,v.rate+1,v.years);
+  const reserveNeed=Math.max(150,(v.living+v.car+v.otherDebt)*6);
+  const usableDown=Math.max(0,v.savings-reserveNeed),safeDown=Math.min(v.down,usableDown);
+  const monthlyBuffer=Math.max(2,v.takehome*.08);
+  const educationReserve=v.childAges.reduce((sum,age)=>{
+    if(age>=16&&age<=22)return sum+2*12*Math.max(0,22-age);
+    if(age>=10&&age<=15)return sum+1*12*Math.max(0,22-age);
+    return sum;
+  },0);
+  const educationUnknown=v.children>0&&v.childAges.length===0;
+  const ratioCapacity=v.takehome*.25;
+  const ownershipCostForPrice=priceMan=>Math.max(2,priceMan*.008/12);
+  let safePrice=Math.max(0,safeDown),safePayment=0,cashflowCapacity=0,ownershipCost=0;
+  for(let i=0;i<30;i++){
+    ownershipCost=ownershipCostForPrice(safePrice);
+    cashflowCapacity=Math.max(0,v.takehome-v.living-v.car-v.otherDebt-v.educationSave-v.retirementSave-monthlyBuffer-ownershipCost);
+    safePayment=Math.min(cashflowCapacity,ratioCapacity);
+    const safeLoan=principalFromPayment(safePayment,v.rate,v.years),nextSafePrice=Math.max(0,safeLoan+safeDown);
+    if(Math.abs(nextSafePrice-safePrice)<.01){safePrice=nextSafePrice;break;}
+    safePrice=nextSafePrice;
   }
-
-  eb.style.display = 'none';
-
-  const loan = Math.max(0, v.price - v.down);
-
-  const payment = monthlyPayment(
-    loan,
-    v.rate,
-    v.years
-  );
-
-    const stressPayment05 = monthlyPayment(
-    loan,
-    v.rate + 0.5,
-    v.years
-  );
-const stressPayment = monthlyPayment(
-    loan,
-    v.rate + 1.0,
-    v.years
-  );
-
-  // 生活防衛資金：
-  // 基本生活費・車関連費・他借入返済の6か月分。
-  // 最低150万円を確保する。
-  const monthlyEssential =
-    v.living +
-    v.car +
-    v.otherDebt;
-
-  const reserveNeed = Math.max(
-    150,
-    monthlyEssential * 6
-  );
-
-  // 預貯金から生活防衛資金を差し引いた金額を
-  // 実質的に頭金へ回せる上限とする。
-  const usableDown = Math.max(
-    0,
-    v.savings - reserveNeed
-  );
-
-  const safeDown = Math.min(
-    v.down,
-    usableDown
-  );
-
-  
-
-  // 収入減・突発支出に備える月次余力。
-  // 手取りの8%、最低2万円。
-  const monthlyBuffer = Math.max(
-    2.0,
-    v.takehome * 0.08
-  );
-
-  // 子どもの年齢から教育費の安全資金を簡易計算。
-  // これは安心予算から二重控除しない。
-  const educationReserve = v.childAges.reduce(
-    (sum, age) => {
-      if (age >= 16 && age <= 22) {
-        return sum +
-          2.0 *
-          12 *
-          Math.max(0, 22 - age);
-      }
-
-      if (age >= 10 && age <= 15) {
-        return sum +
-          1.0 *
-          12 *
-          Math.max(0, 22 - age);
-      }
-
-      return sum;
-    },
-    0
-  );
-
- // 手取りの25%を住宅ローン返済額の目安上限とする。
-const ratioCapacity = v.takehome * 0.25;
-
-// 住宅維持費は「希望価格」ではなく、算出中の安心購入予算に応じて
-// 年0.8%（最低月2万円）で見積もる。
-// 同じ家計条件なら、希望価格を変えても安心購入予算は変わらない。
-const ownershipCostForPrice = (priceMan) =>
-  Math.max(2.0, priceMan * 0.008 / 12);
-
-let safePrice = Math.max(0, safeDown);
-let safePayment = 0;
-let cashflowCapacity = 0;
-let ownershipCost = 0;
-
-for (let i = 0; i < 30; i += 1) {
-  ownershipCost = ownershipCostForPrice(safePrice);
-
-  cashflowCapacity = Math.max(
-    0,
-    v.takehome
-      - v.living
-      - v.car
-      - v.otherDebt
-      - v.educationSave
-      - v.retirementSave
-      - monthlyBuffer
-      - ownershipCost
-  );
-
-  safePayment = Math.min(
-    cashflowCapacity,
-    ratioCapacity
-  );
-
-  const safeLoan = principalFromPayment(
-    safePayment,
-    v.rate,
-    v.years
-  );
-
-  const nextSafePrice = Math.max(
-    0,
-    safeLoan + safeDown
-  );
-
-  if (Math.abs(nextSafePrice - safePrice) < 0.01) {
-    safePrice = nextSafePrice;
-    break;
-  }
-
-  safePrice = nextSafePrice;
+  const cashRatio=v.takehome>0?payment/v.takehome*100:0,annualDebt=(payment+v.otherDebt)*12,dti=v.income>0?annualDebt/v.income*100:0;
+  const flat35Limit=v.income<400?30:35,reserveAfter=v.savings-v.down,yearsToRetire=Math.max(0,v.retireAge-v.age);
+  const retireBalance=remainingBalance(loan,v.rate,v.years,yearsToRetire),gap=v.price-safePrice;
+  const childPeakSoon=v.childAges.some(a=>a>=10&&a<=18),stressIncrease05=Math.max(0,stressPayment05-payment),stressIncrease=Math.max(0,stressPayment-payment);
+  let cls='good',title='🟢 安心できる範囲';
+  const majorRisk=gap>300||reserveAfter<reserveNeed||cashflowCapacity<=0||cashRatio>30;
+  const caution=gap>0||cashRatio>25||dti>flat35Limit||stressIncrease>=2||childPeakSoon||educationUnknown;
+  if(majorRisk){cls='bad';title='🔴 負担が大きい可能性';}else if(caution){cls='warn';title='🟡 注意が必要';}
+  $('judgement').className=`judgement ${cls}`;$('judgement').textContent=title;
+  $('mPrice').textContent=man(v.price);$('mSafe').textContent=`約${man(safePrice)}`;
+  $('mGap').textContent=gap>0?`約${man(gap)}超過`:`約${man(Math.abs(gap))}余裕`;
+  $('mLoan').textContent=man(loan);$('mPay').textContent=`${payment.toFixed(1)}万円/月`;$('mCashRatio').textContent=`${cashRatio.toFixed(1)}%`;
+  $('mReserve').textContent=man(reserveAfter);$('mEducationReserve').textContent=educationUnknown?'要確認（年齢未入力）':man(educationReserve);
+  $('mRetireBalance').textContent=man(retireBalance);$('mDti').textContent=`${dti.toFixed(1)}%`;$('mFlat35').textContent=`年収区分の基準 ${flat35Limit}%以下`;
+  $('summary').textContent=gap>0?`希望価格は、家計から見た安心購入予算を約${Math.round(gap).toLocaleString('ja-JP')}万円上回る試算です。購入後の生活・教育・老後まで含めて再確認してください。`:'希望価格は簡易診断上の安心購入予算の範囲内です。ただし、教育費・老後資金・住宅維持費・収入減少などの個別確認は必要です。';
+  const risks=[];
+  if(reserveAfter<reserveNeed)risks.push(`購入後預貯金が、生活防衛資金の簡易目安（約${Math.round(reserveNeed).toLocaleString('ja-JP')}万円）を下回ります。`);
+  if(cashRatio>25)risks.push(`住宅ローン返済だけで手取り月収の${cashRatio.toFixed(1)}%です。家計余力を確認してください。`);
+  if(educationUnknown)risks.push('子どもの年齢が未入力のため、教育費ピークの安全資金を十分に判定できません。');
+  else if(educationReserve>0)risks.push(`教育費安全資金${Math.round(educationReserve).toLocaleString('ja-JP')}万円を見込んでいます。子どもの年齢と教育費ピークを確認してください。`);
+  if(retireBalance>0)risks.push(`退職予定年齢${Math.round(v.retireAge)}歳時点の残債は約${Math.round(retireBalance).toLocaleString('ja-JP')}万円の試算です。この簡易診断では退職後の収入・退職金等による返済能力までは判定していません。`);
+  if(stressIncrease>=2)risks.push(`金利が1.0%上昇した場合、月返済額が約${stressIncrease.toFixed(1)}万円増える試算です。`);
+  $('risks').innerHTML=risks.map(r=>`<div class="risk-item">・${r}</div>`).join('');
+  $('stressPay05').textContent=`${stressPayment05.toFixed(1)}万円/月`;$('stressDiff05').textContent=`現在の想定より月約${stressIncrease05.toFixed(1)}万円増える試算です。`;
+  $('stressPay').textContent=`${stressPayment.toFixed(1)}万円/月`;$('stressDiff').textContent=`現在の想定より月約${stressIncrease.toFixed(1)}万円増える試算です。`;
+  try{sessionStorage.setItem('housingBudgetSimulationInput',JSON.stringify({takehome:v.takehome,savings:v.savings,living:v.living,car:v.car,otherDebt:v.otherDebt,education:v.educationSave,retirementSave:v.retirementSave,price:v.price,down:v.down,loanYears:v.years,rate:v.rate}));}catch(_){}
+  $('result').hidden=false;requestAnimationFrame(()=>$('result').scrollIntoView({behavior:'smooth',block:'start'}));
 }
-
-  const cashRatio =
-    v.takehome > 0
-      ? (payment / v.takehome) * 100
-      : 0;
-
-  const annualDebt =
-    (payment + v.otherDebt) * 12;
-
-  const dti =
-    v.income > 0
-      ? (annualDebt / v.income) * 100
-      : 0;
-
-  const flat35Limit =
-    v.income < 400
-      ? 30
-      : 35;
-
-  const reserveAfter =
-    v.savings - v.down;
-
-  const yearsToRetire =
-    Math.max(
-      0,
-      v.retireAge - v.age
-    );
-
-  const retireBalance =
-    remainingBalance(
-      loan,
-      v.rate,
-      v.years,
-      yearsToRetire
-    );
-
-  const gap =
-    v.price - safePrice;
-
-  const childPeakSoon =
-    v.childAges.some(
-      a => a >= 10 && a <= 18
-    );
-
-    const stressIncrease05 =
-    Math.max(
-      0,
-      stressPayment05 - payment
-    );
-const stressIncrease =
-    Math.max(
-      0,
-      stressPayment - payment
-    );
-
-  let cls = 'good';
-  let title = '🟢 安全圏の可能性';
-
-  const majorRisk =
-    gap > 300 ||
-    reserveAfter < reserveNeed ||
-    cashflowCapacity <= 0 ||
-    cashRatio > 30 ||
-    retireBalance >
-      Math.max(500, v.income);
-
-  const caution =
-    gap > 0 ||
-    cashRatio > 25 ||
-    dti > flat35Limit ||
-    stressIncrease >= 2 ||
-    childPeakSoon;
-
-  if (majorRisk) {
-    cls = 'bad';
-    title = '🔴 負担が大きい可能性';
-  } else if (caution) {
-    cls = 'warn';
-    title = '🟡 購入前に詳細確認を推奨';
-  }
-
-  $('judgement').className =
-    `judgement ${cls}`;
-
-  $('judgement').textContent =
-    title;
-
-  $('mPrice').textContent =
-    man(v.price);
-
-  $('mSafe').textContent =
-    `約${man(safePrice)}`;
-
-  $('mGap').textContent =
-    gap > 0
-      ? `約${man(gap)}超過`
-      : `約${man(Math.abs(gap))}余裕`;
-
-  $('mLoan').textContent =
-    man(loan);
-
-  $('mPay').textContent =
-    `${payment.toFixed(1)}万円/月`;
-
-  $('mCashRatio').textContent =
-    `${cashRatio.toFixed(1)}%`;
-
-  $('mReserve').textContent =
-    man(reserveAfter);
-
-  $('mEducationReserve').textContent =
-    man(educationReserve);
-
-  $('mRetireBalance').textContent =
-    man(retireBalance);
-
-  $('mDti').textContent =
-    `${dti.toFixed(1)}%`;
-
-  $('mFlat35').textContent =
-    `年収区分の基準 ${flat35Limit}%以下`;
-
-  $('summary').textContent =
-    gap > 0
-      ? `希望価格は、家計から見た安心購入予算を約${Math.round(
-          gap
-        ).toLocaleString(
-          'ja-JP'
-        )}万円上回る試算です。「審査に通るか」ではなく、購入後の生活・教育・老後まで含めて再確認してください。`
-      : '希望価格は簡易診断上の安心購入予算の範囲内です。ただし、教育費・老後資金・住宅維持費・収入減少などの個別確認は必要です。';
-
-  const risks = [];
-
-  if (reserveAfter < reserveNeed) {
-    risks.push(
-      `購入後預貯金が、生活防衛資金の簡易目安（約${Math.round(
-        reserveNeed
-      ).toLocaleString(
-        'ja-JP'
-      )}万円）を下回ります。`
-    );
-  }
-
-  if (cashRatio > 25) {
-    risks.push(
-      `住宅ローン返済だけで手取り月収の${cashRatio.toFixed(
-        1
-      )}%です。家計余力を確認してください。`
-    );
-  }
-
-  if (educationReserve > 0) {
-    risks.push(
-      `教育費安全資金${Math.round(
-        educationReserve
-      ).toLocaleString(
-        'ja-JP'
-      )}万円を見込んでいます。子どもの年齢と教育費ピークを確認してください。`
-    );
-  }
-
-  if (retireBalance > 0) {
-    risks.push(
-      `退職予定年齢${Math.round(
-        v.retireAge
-      )}歳時点の残債は約${Math.round(
-        retireBalance
-      ).toLocaleString(
-        'ja-JP'
-      )}万円の試算です。退職後返済の原資を確認してください。`
-    );
-  }
-
-  if (stressIncrease >= 2) {
-    risks.push(
-      `金利が1.0%上昇した場合、月返済額が約${stressIncrease.toFixed(
-        1
-      )}万円増える試算です。`
-    );
-  }
-
-  $('risks').innerHTML =
-    risks
-      .map(
-        r => `<div class="risk-item">・${r}</div>`
-      )
-      .join('');
-
-    $('stressPay05').textContent =
-    `${stressPayment05.toFixed(1)}万円/月`;
-
-  $('stressDiff05').textContent =
-    `現在の想定より月約${stressIncrease05.toFixed(
-      1
-    )}万円増える試算です。`;
-$('stressPay').textContent =
-    `${stressPayment.toFixed(1)}万円/月`;
-
-  $('stressDiff').textContent =
-    `現在の想定より月約${stressIncrease.toFixed(
-      1
-    )}万円増える試算です。`;
-
-  $('result').hidden = false;
-
-  requestAnimationFrame(() =>
-    $('result').scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
-  );
-}
-
-function showScreen(id) {
-  document
-    .querySelectorAll('.screen')
-    .forEach(
-      el => el.hidden = el.id !== id
-    );
-
-  document
-    .querySelectorAll('.menu-card')
-    .forEach(
-      btn =>
-        btn.classList.toggle(
-          'active',
-          btn.dataset.target === id
-        )
-    );
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-}
-
-document.addEventListener(
-  'DOMContentLoaded',
-  () => {
-    $('diagnoseBtn')
-      .addEventListener(
-        'click',
-        diagnose
-      );
-
-    $('retryBtn')
-      .addEventListener(
-        'click',
-        () =>
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          })
-      );
-
-    document
-      .querySelectorAll('.menu-card')
-      .forEach(btn => {
-        btn.addEventListener(
-          'click',
-          () =>
-            showScreen(
-              btn.dataset.target
-            )
-        );
-      });
-
-    $('closeInstallHelp')
-      .addEventListener(
-        'click',
-        () =>
-          $('iosInstall').hidden = true
-      );
-
-    let deferredPrompt = null;
-
-    const installBtn =
-      $('installBtn');
-
-    const isIOS =
-      /iphone|ipad|ipod/i.test(
-        navigator.userAgent
-      );
-
-    const isStandalone =
-      window.matchMedia(
-        '(display-mode: standalone)'
-      ).matches ||
-      window.navigator.standalone === true;
-
-    window.addEventListener(
-      'beforeinstallprompt',
-      e => {
-        e.preventDefault();
-
-        deferredPrompt = e;
-
-        if (!isStandalone) {
-          installBtn.hidden = false;
-        }
-      }
-    );
-
-    if (isIOS && !isStandalone) {
-      installBtn.hidden = false;
-    }
-
-    installBtn.addEventListener(
-      'click',
-      async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-
-          await deferredPrompt.userChoice;
-
-          deferredPrompt = null;
-          installBtn.hidden = true;
-        } else if (isIOS) {
-          $('iosInstall').hidden = false;
-        }
-      }
-    );
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register(
-          './service-worker.js'
-        )
-        .catch(() => {});
-    }
-  }
-);
+function showScreen(id){document.querySelectorAll('.screen').forEach(el=>el.hidden=el.id!==id);document.querySelectorAll('.menu-card').forEach(btn=>btn.classList.toggle('active',btn.dataset.target===id));window.scrollTo({top:0,behavior:'smooth'});}
+document.addEventListener('DOMContentLoaded',()=>{
+  $('diagnoseBtn').addEventListener('click',diagnose);$('retryBtn').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  document.querySelectorAll('.menu-card').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.target)));
+  $('closeInstallHelp').addEventListener('click',()=>$('iosInstall').hidden=true);
+  let deferredPrompt=null;const installBtn=$('installBtn'),isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(!isStandalone)installBtn.hidden=false;});
+  if(isIOS&&!isStandalone)installBtn.hidden=false;
+  installBtn.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.hidden=true;}else if(isIOS)$('iosInstall').hidden=false;});
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+});
