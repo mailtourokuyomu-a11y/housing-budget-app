@@ -1,10 +1,12 @@
-
-const CACHE = 'housing-budget-pwa-v2';
+const CACHE = 'housing-budget-pwa-v3';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './simulation.html',
+  './simulation.css',
+  './simulator.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
